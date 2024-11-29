@@ -1,26 +1,70 @@
 const express = require("express");
-
 const app = express();
-const {adminAuth,userAuth} = require('./Middleware/Auth.js')
+const connectDB = require("./config/database");
+const User = require("./models/user.js");
+app.use(express.json());
+app.post("/signup", async (req, res) => {
+  console.log(req.body);
+  const user = new User(req.body);
 
-app.use('/admin',adminAuth);
+  try{
+    await user.save();
+    res.send("User Added Succefully");
+  }catch(err){
+    res.send( 400).send("erroer having user " + err.message)
+  }
 
-app.get('/user', userAuth,(req,res)=>{
-  res.send("Data Sent2") 
-})
-app.get('/admin/getAlldata',(req,res)=>{
-  res.send("Data Sent3")
-})
-app.get('/admin/DeleteUser',(req,res)=>{
-  res.send("Data Sent4")
-})
+
+});
+connectDB()
+  .then(() => {
+    console.log("DataBase Connection succeful");
+    app.listen(7777, () => {
+      console.log("Server Started on port:7777..");
+    });
+  })
+  .catch((err) => {
+    console.log("DataBase Error", err);
+  });
+
+// const jwt = require("jsonwebtoken");
+// const secretkey = "@Rahulsingh123456";
+
+// const payload = {
+//   userId: 123,
+//   role: "admin",
+//   iat: Math.floor(Date.now() / 1000), // Issued at time
+//   exp: Math.floor(Date.now() / 1000) + 60 * 60, // Expires in 1 hour
+// };
+
+// const token = jwt.sign(payload, secretkey);
+// console.log("Generated Token:", token);
+
+
+
+
+
+// app.use('/',(err,req,res,next)=>{
+//   if(err){
+//     res.status(404).send("Something went wong")
+//   }
+// })
+// app.get('/getuserData',(req,res)=>{
+//   try{
+//       //Logic of db call and get the user data
+//   throw new error("dfghjfy");
+//   res.send("User data Sentt")
+//   }catch(error){
+//     res.status(404).send("Something went wong again  ")
+//   }
+
+// })
 
 // app.use("/user", (req, res) => {
 //    console.log("Handling the First Route-1");
 //    res.send("1st Rseponse")
 //   },
 // );
-
 
 // app.use("/user", (req, res,next) => {
 //    console.log(" HAndling the first Route-1 ");
@@ -41,19 +85,10 @@ app.get('/admin/DeleteUser',(req,res)=>{
 //   }
 // );
 
-
-
-
-
-
-  app.listen(3000, () => {
-    console.log("Server Started on port:3000..");
-  });
-
 // app.get("/ab+c", (req, res) => {
 //     res.send({ name: "Dev", lastName: "Simgh" });
 //   });
-  
+
 // app.get("/use?r", (req, res) => {
 //   res.send({ name: "rahul", lastName: "Simgh" });
 // });
